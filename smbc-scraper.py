@@ -36,6 +36,14 @@ def parse_img(element: Tag, stem: str):
         print("Not a recognized image format!")
         return
 
+    # URL-encode the URL path to avoid issues with special characters,
+    # including a space (ref. https://www.smbc-comics.com/comic/a-monster-2),
+    # in image names. Encoding the whole thing would break scheme.
+    url_split = urlsplit(url)
+    url = urlunsplit(url_split._replace(
+        path=quote(url_split.path)
+        ))
+
     with urlopen(url) as response, \
          open(f'{stem}.{ext}', 'wb') as f:
             copyfileobj(response, f)
